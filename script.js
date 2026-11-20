@@ -467,7 +467,7 @@
 
     function normalizeTargetUrl(raw) {
       let trimmed = (raw || '').trim();
-      if (!trimmed) return 'https://gemini.google.com';
+      if (!trimmed) return 'https://github.com/Calvon33123/3D-QR-Code-Generator';
       if (!/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(trimmed) && trimmed.includes('.')) {
         return 'https://' + trimmed;
       }
