@@ -310,7 +310,7 @@
     // =========================================================================
     const state = {
       occasion: 'christmas',
-      url: 'https://gemini.google.com',
+      url: 'https://github.com/Calvon33123/3D-QR-Code-Generator',
       message: '',
       shape: 'tree',
       variant: 'Layered Fir',
