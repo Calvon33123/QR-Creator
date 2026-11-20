@@ -388,151 +388,67 @@ button {
   #studio-footer { padding-bottom: max(4px, env(safe-area-inset-bottom)); }
 }
 
-/* Clean shared-link presentation: the banner already contains the greeting,
-   so don't draw a second title over the QR code. */
+/* Shared-link custom headline: mirror the desktop preview, with clear space below the banner. */
 body.recipient-mode #floating-headline {
-  display: none !important;
+  display: block !important; visibility: visible !important; top: 92px !important;
+  left: 0; right: 0; width: 100%; max-width: none;
+  padding-left: max(14px, env(safe-area-inset-left));
+  padding-right: max(14px, env(safe-area-inset-right));
+  transform: none; z-index: 10; text-align: center;
 }
-
-/* Keep the shared greeting banner readable without forcing text over the QR. */
+body.recipient-mode #headline-display {
+  display: block; width: 100%; max-width: 720px; margin: 0 auto;
+  overflow-wrap: anywhere; line-height: 1.2;
+  font-size: clamp(18px, 4.5vw, 30px); font-weight: 700;
+  text-shadow: 0 2px 12px rgba(2, 6, 23, .85);
+}
 body.recipient-mode #recipient-banner {
-  width: 100%;
-  padding-left: max(12px, env(safe-area-inset-left));
+  width: 100%; padding-left: max(12px, env(safe-area-inset-left));
   padding-right: max(12px, env(safe-area-inset-right));
 }
-
 body.recipient-mode #recipient-banner > div {
-  width: min(100%, 440px);
-  min-width: 0;
-  gap: clamp(6px, 2vw, 12px);
+  width: min(100%, 440px); min-width: 0; gap: clamp(6px, 2vw, 12px);
 }
-
 body.recipient-mode #recipient-occasion-badge,
+body.recipient-mode #recipient-msg-text { min-width: 0; }
 body.recipient-mode #recipient-msg-text {
-  min-width: 0;
+  flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-
-body.recipient-mode #recipient-msg-text {
-  flex: 1 1 auto;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 body.recipient-mode #customize-own-btn {
-  flex: 0 0 auto;
-  min-height: 40px;
-  padding-inline: clamp(10px, 3vw, 16px);
+  flex: 0 0 auto; min-height: 40px; padding-inline: clamp(10px, 3vw, 16px);
 }
-
 body.recipient-mode #recipient-footer {
   bottom: max(12px, env(safe-area-inset-bottom));
   padding-left: max(12px, env(safe-area-inset-left));
   padding-right: max(12px, env(safe-area-inset-right));
 }
-
-body.recipient-mode #recipient-footer > div {
-  width: min(100%, 560px);
-  gap: clamp(8px, 2vw, 14px);
-}
-
-body.recipient-mode #recipient-footer button {
-  min-height: 46px;
-  justify-content: center;
-  white-space: nowrap;
-}
-
+body.recipient-mode #recipient-footer > div { width: min(100%, 560px); gap: clamp(8px, 2vw, 14px); }
+body.recipient-mode #recipient-footer button { min-height: 46px; justify-content: center; white-space: nowrap; }
 @media (max-width: 520px) {
+  body.recipient-mode #floating-headline { top: 92px !important; padding-left: 16px; padding-right: 16px; }
+  body.recipient-mode #headline-display { font-size: clamp(17px, 5vw, 23px); max-width: 100%; }
   body.recipient-mode #recipient-banner > div {
-    border-radius: 18px;
-    padding: 8px 10px;
-  }
-
-  body.recipient-mode #recipient-occasion-badge {
-    max-width: 40%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 11px;
-  }
-
-  body.recipient-mode #recipient-msg-text {
-    font-size: clamp(12px, 3.5vw, 15px);
-  }
-
-  body.recipient-mode #customize-own-btn {
-    font-size: 12px;
-  }
-
-  body.recipient-mode #recipient-footer > div {
-    gap: 8px;
-  }
-
-  body.recipient-mode #recipient-morph-btn,
-  body.recipient-mode #recipient-visit-btn {
-    min-width: 0;
-    padding: 12px clamp(10px, 3vw, 16px);
-    font-size: clamp(11px, 3.2vw, 14px);
-  }
-
-  body.recipient-mode #recipient-morph-btn {
-    flex: 1 1 auto;
-  }
-
-  body.recipient-mode #recipient-visit-btn {
-    flex: 0 0 auto;
-  }
-}
-
-@media (max-width: 360px) {
-  body.recipient-mode #recipient-occasion-badge {
-    max-width: 34%;
-    padding-inline: 7px;
-  }
-
-  body.recipient-mode #recipient-morph-btn {
-    gap: 6px;
-  }
-
-  body.recipient-mode #recipient-morph-label {
-    max-width: 155px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-}
-
-
-/* Hard guarantee for shared-link views: never place a second title over the
-   canvas. The greeting belongs only in the recipient banner on every device. */
-body.recipient-mode #floating-headline {
-  display: none !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-}
-
-/* Keep long greetings inside the shared banner on narrow phone screens. */
-@media (max-width: 520px) {
-  body.recipient-mode #recipient-banner > div {
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: center;
-    width: calc(100vw - 20px);
-    max-width: calc(100vw - 20px);
-    overflow: hidden;
+    display: flex; flex-wrap: nowrap; align-items: center;
+    width: calc(100vw - 20px); max-width: calc(100vw - 20px); overflow: hidden;
+    border-radius: 18px; padding: 8px 10px;
   }
   body.recipient-mode #recipient-occasion-badge {
-    flex: 0 1 auto;
+    flex: 0 1 auto; max-width: 34%; overflow: hidden; text-overflow: ellipsis;
+    white-space: nowrap; font-size: 11px; padding-inline: 7px;
   }
   body.recipient-mode #recipient-msg-text {
-    flex: 1 1 0%;
-    width: 0;
-    min-width: 0;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
+    flex: 1 1 0%; width: 0; min-width: 0; font-size: clamp(12px, 3.5vw, 15px);
+    text-overflow: ellipsis; overflow: hidden; white-space: nowrap;
   }
-  body.recipient-mode #customize-own-btn {
-    flex: 0 0 auto;
-    white-space: nowrap;
+  body.recipient-mode #customize-own-btn { flex: 0 0 auto; font-size: 12px; white-space: nowrap; }
+  body.recipient-mode #recipient-footer > div { gap: 8px; }
+  body.recipient-mode #recipient-morph-btn, body.recipient-mode #recipient-visit-btn {
+    min-width: 0; padding: 12px clamp(10px, 3vw, 16px); font-size: clamp(11px, 3.2vw, 14px);
   }
+  body.recipient-mode #recipient-morph-btn { flex: 1 1 auto; }
+  body.recipient-mode #recipient-visit-btn { flex: 0 0 auto; }
+}
+@media (orientation: landscape) and (max-height: 500px) {
+  body.recipient-mode #floating-headline { top: 76px !important; }
+  body.recipient-mode #headline-display { font-size: clamp(15px, 3vw, 20px); }
 }
