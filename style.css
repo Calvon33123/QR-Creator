@@ -500,3 +500,39 @@ body.recipient-mode #recipient-footer button {
     text-overflow: ellipsis;
   }
 }
+
+
+/* Hard guarantee for shared-link views: never place a second title over the
+   canvas. The greeting belongs only in the recipient banner on every device. */
+body.recipient-mode #floating-headline {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Keep long greetings inside the shared banner on narrow phone screens. */
+@media (max-width: 520px) {
+  body.recipient-mode #recipient-banner > div {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    width: calc(100vw - 20px);
+    max-width: calc(100vw - 20px);
+    overflow: hidden;
+  }
+  body.recipient-mode #recipient-occasion-badge {
+    flex: 0 1 auto;
+  }
+  body.recipient-mode #recipient-msg-text {
+    flex: 1 1 0%;
+    width: 0;
+    min-width: 0;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  body.recipient-mode #customize-own-btn {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+}

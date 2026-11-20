@@ -1639,6 +1639,11 @@
       const displayTitle = state.message.trim() || (state.isRecipientMode ? occ.defaultTitle : '');
       headlineDisplay.textContent = displayTitle;
       floatingHeadline.style.top = state.isRecipientMode ? '68px' : '104px';
+      // Shared recipient pages already show the greeting in the top banner.
+      // Hide the floating title directly as well as via CSS so it cannot
+      // overlap the QR or 3D sculpture on mobile, even if utility CSS fails.
+      floatingHeadline.style.display = state.isRecipientMode ? 'none' : '';
+      floatingHeadline.setAttribute('aria-hidden', state.isRecipientMode ? 'true' : 'false');
 
       document.body.classList.toggle('recipient-mode', Boolean(state.isRecipientMode));
 
