@@ -1638,9 +1638,9 @@
 
       const displayTitle = state.message.trim() || (state.isRecipientMode ? occ.defaultTitle : '');
       headlineDisplay.textContent = displayTitle;
-      floatingHeadline.style.top = state.isRecipientMode ? '92px' : '104px';
-      // Keep the custom greeting visible on shared links, matching the desktop preview.
-      // Position it below the recipient banner so it does not collide with the QR/3D artwork.
+      floatingHeadline.style.top = state.isRecipientMode ? '8px' : '104px';
+      // Shared links use one headline at the top of the viewport on desktop and mobile.
+      // CSS accounts for safe areas and responsive type sizes.
       floatingHeadline.style.display = '';
       floatingHeadline.setAttribute('aria-hidden', 'false');
 
@@ -1649,7 +1649,7 @@
       if (state.isRecipientMode) {
         studioHeader.classList.add('hidden');
         studioFooter.classList.add('hidden');
-        recipientBanner.classList.remove('hidden');
+        recipientBanner.classList.add('hidden');
         recipientFooter.classList.remove('hidden');
         recipientOccasionBadge.textContent = `${occ.icon} ${occ.name}`;
         recipientMsgText.textContent = state.message.trim() || occ.defaultTitle;
