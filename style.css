@@ -212,3 +212,178 @@
         animation: none !important;
       }
     }
+
+
+/* Cross-platform responsive refinements: phones, tablets, landscape, and notched screens */
+html {
+  min-height: 100%;
+  min-height: 100dvh;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100%;
+  min-height: 100dvh;
+  overscroll-behavior: none;
+}
+
+button, input {
+  font: inherit;
+}
+
+button {
+  touch-action: manipulation;
+}
+
+#studio-header,
+#studio-footer {
+  padding-left: max(8px, env(safe-area-inset-left));
+  padding-right: max(8px, env(safe-area-inset-right));
+}
+
+#studio-footer {
+  padding-bottom: max(10px, env(safe-area-inset-bottom));
+}
+
+#url-input, #msg-input {
+  min-width: 0;
+  font-size: 16px;
+}
+
+#shapes-row, #swatches-row, #variants-row {
+  min-width: 0;
+  max-width: 100%;
+}
+
+@media (max-width: 640px) {
+  #studio-header {
+    padding-top: max(8px, env(safe-area-inset-top));
+    gap: 7px;
+  }
+
+  #studio-header > div:first-child {
+    gap: 5px;
+  }
+
+  #occasions-row {
+    max-width: calc(100vw - 150px) !important;
+    min-width: 0;
+  }
+
+  #toggle-morph-btn {
+    padding: 8px 9px;
+    gap: 5px;
+  }
+
+  #inputs-row {
+    gap: 6px;
+  }
+
+  #inputs-row > div {
+    min-width: 0;
+    padding: 7px 9px;
+  }
+
+  #url-input, #msg-input {
+    width: 100%;
+    min-width: 0;
+  }
+
+  #open-link-btn {
+    padding: 6px 8px;
+    min-height: 32px;
+  }
+
+  #floating-headline {
+    top: 156px !important;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  #studio-footer {
+    gap: 6px;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+
+  #variants-row {
+    max-height: 70px;
+    overflow-y: auto;
+    padding: 0 2px;
+  }
+
+  #studio-footer > .glass-panel {
+    width: 100%;
+    max-width: 100%;
+    gap: 6px;
+    padding: 6px;
+    border-radius: 15px;
+    justify-content: flex-start;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #copy-btn {
+    padding: 9px 10px;
+    min-height: 40px;
+  }
+
+  .shape-btn {
+    width: 36px;
+    height: 40px;
+    flex: 0 0 36px;
+  }
+
+  #instruction-text {
+    max-width: 95vw;
+    font-size: 10px;
+    line-height: 1.35;
+    text-wrap: balance;
+  }
+
+  #recipient-banner {
+    top: max(8px, env(safe-area-inset-top));
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  #recipient-banner > div {
+    width: 100%;
+    max-width: 100%;
+    gap: 7px;
+  }
+
+  #recipient-footer > div {
+    max-width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 380px) {
+  #occasions-row { max-width: calc(100vw - 138px) !important; }
+  #toggle-morph-btn { padding: 7px; }
+  #morph-btn-label { font-size: 11px; }
+  #studio-footer > .glass-panel { gap: 4px; }
+  #swatches-row { gap: 6px; }
+  .swatch-btn { width: 19px; height: 19px; }
+  #copy-btn span { max-width: 64px; }
+}
+
+@media (max-height: 700px) and (max-width: 900px) {
+  #studio-header { gap: 5px; }
+  #studio-footer { gap: 4px; }
+  #variants-row { max-height: 42px; }
+  #instruction-text { display: none; }
+  #floating-headline { top: 145px !important; }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  #studio-header {
+    padding-top: max(5px, env(safe-area-inset-top));
+    gap: 4px;
+  }
+  #inputs-row > div { padding-top: 4px; padding-bottom: 4px; }
+  #floating-headline { top: 100px !important; }
+  #variants-row { max-height: 30px; }
+  #studio-footer { padding-bottom: max(4px, env(safe-area-inset-bottom)); }
+}
