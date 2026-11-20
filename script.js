@@ -310,7 +310,7 @@
     // =========================================================================
     const state = {
       occasion: 'christmas',
-      url: 'https://github.com/Calvon33123/3D-QR-Code-Generator',
+      url: 'https://Example.com',
       message: '',
       shape: 'tree',
       variant: 'Layered Fir',
@@ -467,7 +467,7 @@
 
     function normalizeTargetUrl(raw) {
       let trimmed = (raw || '').trim();
-      if (!trimmed) return 'https://github.com/Calvon33123/3D-QR-Code-Generator';
+      if (!trimmed) return 'https://example.com';
       if (!/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(trimmed) && trimmed.includes('.')) {
         return 'https://' + trimmed;
       }
