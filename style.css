@@ -387,3 +387,116 @@ button {
   #variants-row { max-height: 30px; }
   #studio-footer { padding-bottom: max(4px, env(safe-area-inset-bottom)); }
 }
+
+/* Clean shared-link presentation: the banner already contains the greeting,
+   so don't draw a second title over the QR code. */
+body.recipient-mode #floating-headline {
+  display: none !important;
+}
+
+/* Keep the shared greeting banner readable without forcing text over the QR. */
+body.recipient-mode #recipient-banner {
+  width: 100%;
+  padding-left: max(12px, env(safe-area-inset-left));
+  padding-right: max(12px, env(safe-area-inset-right));
+}
+
+body.recipient-mode #recipient-banner > div {
+  width: min(100%, 440px);
+  min-width: 0;
+  gap: clamp(6px, 2vw, 12px);
+}
+
+body.recipient-mode #recipient-occasion-badge,
+body.recipient-mode #recipient-msg-text {
+  min-width: 0;
+}
+
+body.recipient-mode #recipient-msg-text {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.recipient-mode #customize-own-btn {
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding-inline: clamp(10px, 3vw, 16px);
+}
+
+body.recipient-mode #recipient-footer {
+  bottom: max(12px, env(safe-area-inset-bottom));
+  padding-left: max(12px, env(safe-area-inset-left));
+  padding-right: max(12px, env(safe-area-inset-right));
+}
+
+body.recipient-mode #recipient-footer > div {
+  width: min(100%, 560px);
+  gap: clamp(8px, 2vw, 14px);
+}
+
+body.recipient-mode #recipient-footer button {
+  min-height: 46px;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+  body.recipient-mode #recipient-banner > div {
+    border-radius: 18px;
+    padding: 8px 10px;
+  }
+
+  body.recipient-mode #recipient-occasion-badge {
+    max-width: 40%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 11px;
+  }
+
+  body.recipient-mode #recipient-msg-text {
+    font-size: clamp(12px, 3.5vw, 15px);
+  }
+
+  body.recipient-mode #customize-own-btn {
+    font-size: 12px;
+  }
+
+  body.recipient-mode #recipient-footer > div {
+    gap: 8px;
+  }
+
+  body.recipient-mode #recipient-morph-btn,
+  body.recipient-mode #recipient-visit-btn {
+    min-width: 0;
+    padding: 12px clamp(10px, 3vw, 16px);
+    font-size: clamp(11px, 3.2vw, 14px);
+  }
+
+  body.recipient-mode #recipient-morph-btn {
+    flex: 1 1 auto;
+  }
+
+  body.recipient-mode #recipient-visit-btn {
+    flex: 0 0 auto;
+  }
+}
+
+@media (max-width: 360px) {
+  body.recipient-mode #recipient-occasion-badge {
+    max-width: 34%;
+    padding-inline: 7px;
+  }
+
+  body.recipient-mode #recipient-morph-btn {
+    gap: 6px;
+  }
+
+  body.recipient-mode #recipient-morph-label {
+    max-width: 155px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

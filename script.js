@@ -1640,6 +1640,8 @@
       headlineDisplay.textContent = displayTitle;
       floatingHeadline.style.top = state.isRecipientMode ? '68px' : '104px';
 
+      document.body.classList.toggle('recipient-mode', Boolean(state.isRecipientMode));
+
       if (state.isRecipientMode) {
         studioHeader.classList.add('hidden');
         studioFooter.classList.add('hidden');
