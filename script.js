@@ -1873,21 +1873,63 @@
     toggleMorphBtn.addEventListener('click', toggleQRMode);
     recipientMorphBtn.addEventListener('click', toggleQRMode);
 
-    copyBtn.addEventListener('click', () => {
-      const shareUrl = getShareableURL();
+    // Create a short redirect link for the full share URL. This static GitHub Pages
+    // app has no backend of its own, so it uses is.gd; if the service is unavailable,
+    // it safely falls back to copying the original share URL.
+    async function shortenShareURL(longUrl) {
+      const endpoint = `https://is.gd/create.php?format=simple&url=${encodeURIComponent(longUrl)}`;
+      const response = await fetch(endpoint, { method: 'GET', cache: 'no-store' });
+      if (!response.ok) throw new Error('Short-link service unavailable');
+      const shortUrl = (await response.text()).trim();
+      if (!/^https?:\/\/is\.gd\/[A-Za-z0-9]+$/i.test(shortUrl)) {
+        throw new Error('Invalid short link response');
+      }
+      return shortUrl;
+    }
+
+    async function copyTextToClipboard(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+        return;
+      }
       const tempInput = document.createElement('textarea');
-      tempInput.value = shareUrl;
+      tempInput.value = text;
+      tempInput.setAttribute('readonly', '');
       tempInput.style.position = 'fixed';
       tempInput.style.opacity = '0';
+      tempInput.style.pointerEvents = 'none';
       document.body.appendChild(tempInput);
       tempInput.select();
-      try {
-        document.execCommand('copy');
-        showToast('Shareable 3D occasion link copied!');
-      } catch (err) {
-        showToast('Link updated in address bar!');
-      }
+      const copied = document.execCommand('copy');
       document.body.removeChild(tempInput);
+      if (!copied) throw new Error('Clipboard copy failed');
+    }
+
+    copyBtn.addEventListener('click', async () => {
+      const originalLabel = copyBtn.getAttribute('aria-label');
+      copyBtn.disabled = true;
+      copyBtn.setAttribute('aria-busy', 'true');
+      showToast('Creating short share link…');
+      try {
+        const longUrl = getShareableURL();
+        let linkToCopy = longUrl;
+        let shortened = false;
+        try {
+          linkToCopy = await shortenShareURL(longUrl);
+          shortened = true;
+        } catch (shortenError) {
+          console.warn('Could not shorten share URL; copying full link instead.', shortenError);
+        }
+        await copyTextToClipboard(linkToCopy);
+        showToast(shortened ? 'Short share link copied!' : 'Shortener unavailable — full link copied.');
+      } catch (err) {
+        console.error('Unable to copy share URL:', err);
+        showToast('Could not copy automatically. Please use the address bar link.');
+      } finally {
+        copyBtn.disabled = false;
+        copyBtn.removeAttribute('aria-busy');
+        if (originalLabel) copyBtn.setAttribute('aria-label', originalLabel);
+      }
     });
 
     // =========================================================================
