@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>3D ASCII QR Code Studio — All Occasions</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Optional QRCode Generator Library (paired with built-in standalone Reed-Solomon fallback for offline/GitHub reliability) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app-bg" aria-hidden="true"></div>
+  <canvas id="scene" role="img" aria-label="Interactive 3D ASCII QR code sculpture canvas"></canvas>
+
+  <!-- Live region for screen-reader status announcements -->
+  <div id="sr-status" class="sr-only" role="status" aria-live="polite"></div>
+
+  <!-- Top Bar: Occasion Selector, URL & Message Inputs, and Actions -->
+  <header id="studio-header" aria-label="QR Studio Controls" class="fixed top-0 left-0 right-0 z-20 p-3 sm:p-4 flex flex-col gap-2.5 pointer-events-none">
+    
+    <!-- Row 1: Occasion Switcher Tabs & Quick Morph / Reset / Download Controls -->
+    <div class="flex items-center justify-between gap-2 w-full max-w-6xl mx-auto">
+      <div id="occasions-row" role="tablist" aria-label="Occasions" class="pointer-events-auto flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 max-w-[calc(100vw-195px)] sm:max-w-none">
+        <!-- Populated dynamically by JS -->
+      </div>
+
+      <div class="pointer-events-auto flex items-center gap-1.5 shrink-0">
+        <button
+          id="reset-view-btn"
+          type="button"
+          title="Reset 3D View (Shortcut: R)"
+          aria-label="Reset 3D camera angle and zoom"
+          class="glass-pill p-2 rounded-xl text-slate-200 hover:text-white flex items-center justify-center"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+        </button>
+
+        <button
+          id="download-qr-btn"
+          type="button"
+          title="Download Scannable QR PNG"
+          aria-label="Download scannable QR code as PNG"
+          class="glass-pill p-2 rounded-xl text-slate-200 hover:text-white flex items-center justify-center"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+        </button>
+
+        <button
+          id="toggle-morph-btn"
+          type="button"
+          aria-pressed="false"
+          class="glass-pill px-3 py-2 rounded-xl text-xs font-medium text-slate-100 flex items-center gap-2"
+        >
+          <span id="morph-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true"></span>
+          <span id="morph-btn-label">Reveal QR</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Row 2: Destination URL & Custom Occasion Headline Inputs -->
+    <div id="inputs-row" class="flex flex-col sm:flex-row items-center justify-center gap-2 w-full max-w-3xl mx-auto">
+      <!-- Target URL Input -->
+      <div class="glass-panel pointer-events-auto flex items-center gap-2 px-3 py-1.5 rounded-xl w-full sm:flex-1 transition-all focus-within:border-sky-400/60">
+        <label for="url-input" class="sr-only">Destination URL</label>
+        <svg class="w-3.5 h-3.5 text-slate-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+        </svg>
+        <input
+          id="url-input"
+          type="text"
+          spellcheck="false"
+          autocomplete="off"
+          placeholder="Destination link (e.g. username.github.io)..."
+          class="studio-input bg-transparent border-none outline-none text-xs sm:text-sm text-slate-100 placeholder-slate-400 w-full font-medium"
+        />
+        <button
+          id="open-link-btn"
+          type="button"
+          title="Test destination link in new tab"
+          aria-label="Visit destination link in new tab"
+          class="text-[11px] px-2 py-0.5 rounded-md bg-white/10 hover:bg-white/20 text-slate-100 font-medium transition shrink-0 flex items-center gap-1"
+        >
+          <span>Visit</span>
+          <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Optional Custom Greeting / Title Input -->
+      <div class="glass-panel pointer-events-auto flex items-center gap-2 px-3 py-1.5 rounded-xl w-full sm:w-64 transition-all focus-within:border-sky-400/60">
+        <label for="msg-input" class="sr-only">Custom headline message</label>
+        <svg class="w-3.5 h-3.5 text-slate-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h6m-8 8l4-4h10a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        <input
+          id="msg-input"
+          type="text"
+          maxlength="42"
+          placeholder="Custom title (e.g. You're Invited!)"
+          class="studio-input bg-transparent border-none outline-none text-xs sm:text-sm text-slate-100 placeholder-slate-400 w-full font-medium"
+        />
+      </div>
+    </div>
+  </header>
+
+  <!-- Recipient Showcase Banner (Shown when opening a shared link) -->
+  <aside id="recipient-banner" aria-label="Shared QR Greeting" class="hidden fixed top-4 left-0 right-0 z-20 px-4 flex flex-col items-center gap-2 pointer-events-none">
+    <div class="glass-panel pointer-events-auto px-4 py-2 rounded-2xl flex items-center gap-3 max-w-md">
+      <span id="recipient-occasion-badge" class="text-xs px-2.5 py-0.5 rounded-full bg-white/15 text-white font-semibold tracking-wide">
+        🎄 Christmas
+      </span>
+      <span id="recipient-msg-text" class="text-xs sm:text-sm font-semibold text-white truncate">
+        Merry Christmas!
+      </span>
+      <button
+        id="customize-own-btn"
+        type="button"
+        class="ml-auto text-[11px] px-2.5 py-1 rounded-lg bg-white text-slate-950 font-semibold hover:bg-slate-200 transition shrink-0"
+      >
+        Create Yours
+      </button>
+    </div>
+  </aside>
+
+  <!-- Floating Occasion Headline Overlay above the 3D Sculpture -->
+  <main id="floating-headline" class="fixed top-[108px] sm:top-[104px] left-1/2 -translate-x-1/2 z-10 pointer-events-none text-center px-4 w-full max-w-lg">
+    <h1 id="headline-display" class="text-base sm:text-xl font-semibold tracking-tight text-white/95 drop-shadow-[0_2px_12px_rgba(2,6,23,0.75)]"></h1>
+  </main>
+
+  <!-- Toast Notification -->
+  <div
+    id="toast"
+    role="status"
+    aria-live="polite"
+    class="fixed top-24 left-1/2 -translate-x-1/2 z-30 glass-panel px-4 py-2 rounded-full text-xs sm:text-sm font-medium text-white flex items-center gap-2 opacity-0 pointer-events-none transition-all duration-300 -translate-y-2"
+  >
+    <svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+    </svg>
+    <span id="toast-msg">Shareable link copied!</span>
+  </div>
+
+  <!-- Bottom Floating Controls (Tactile Glassmorphic Dock) -->
+  <footer id="studio-footer" aria-label="Shape and Color Controls" class="fixed bottom-0 left-0 right-0 z-20 pb-4 sm:pb-5 px-3 flex flex-col items-center gap-2 pointer-events-none">
+    
+    <!-- Sub-Variant Pills Row (I, II, III style variants per shape) -->
+    <div id="variants-row" role="group" aria-label="Shape variations" class="pointer-events-auto flex items-center justify-center flex-wrap gap-1.5 max-w-full px-2">
+      <!-- Dynamically populated -->
+    </div>
+
+    <!-- Main Floating Glass Dock -->
+    <div class="glass-panel pointer-events-auto rounded-2xl p-1.5 sm:p-2 flex items-center gap-1.5 sm:gap-2.5 max-w-full overflow-x-auto no-scrollbar">
+      
+      <!-- Copy Shareable Link Button -->
+      <button
+        id="copy-btn"
+        type="button"
+        aria-label="Copy shareable link for this 3D QR code"
+        class="px-3.5 py-2 rounded-xl bg-sky-400/20 hover:bg-sky-400/30 active:scale-95 text-white text-xs sm:text-sm font-medium transition flex items-center gap-1.5 shrink-0 border border-sky-300/25"
+      >
+        <svg class="w-3.5 h-3.5 text-sky-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+          <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
+        </svg>
+        <span>Share Link</span>
+      </button>
+
+      <div class="w-px h-6 bg-slate-400/20 shrink-0" aria-hidden="true"></div>
+
+      <!-- Shape Category Icons (Dynamically rendered for active occasion) -->
+      <div id="shapes-row" role="group" aria-label="3D sculpture shapes" class="flex items-center gap-1 shrink-0">
+        <!-- Populated by JS -->
+      </div>
+
+      <div class="w-px h-6 bg-slate-400/20 shrink-0" aria-hidden="true"></div>
+
+      <!-- Color Theme Swatches (Dynamically rendered for active occasion) -->
+      <div id="swatches-row" role="group" aria-label="Color themes" class="flex items-center gap-2 px-1.5 shrink-0">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+
+    <!-- Bottom Instruction Prompt -->
+    <p id="instruction-text" class="text-[11px] sm:text-xs text-slate-300 font-medium tracking-wide transition-opacity duration-300 text-center">
+      Tap 3D shape or press SPACE to reveal scannable QR · R to reset view
+    </p>
+  </footer>
+
+  <!-- Recipient Quick Action Footer (Minimalist when viewing someone else's shared link) -->
+  <div id="recipient-footer" class="hidden fixed bottom-5 left-0 right-0 z-20 px-4 flex flex-col items-center gap-2.5 pointer-events-none">
+    <div class="pointer-events-auto flex items-center gap-2">
+      <button
+        id="recipient-morph-btn"
+        type="button"
+        class="glass-panel px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold text-white hover:bg-white/15 transition flex items-center gap-2"
+      >
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping" aria-hidden="true"></span>
+        <span id="recipient-morph-label">Tap to Reveal & Scan QR Code</span>
+      </button>
+      <button
+        id="recipient-visit-btn"
+        type="button"
+        class="glass-pill px-4 py-2.5 rounded-full text-xs sm:text-sm font-medium text-slate-100 hover:text-white flex items-center gap-1.5"
+      >
+        <span>Open Link</span>
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
